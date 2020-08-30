@@ -9,4 +9,3 @@ kubectl config use-context hatena-intern-2020
 # 起動
 make up
 
-minikube -n hatena-intern-2020 service blog
