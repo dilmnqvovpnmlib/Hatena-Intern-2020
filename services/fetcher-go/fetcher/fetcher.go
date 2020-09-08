@@ -9,7 +9,7 @@ import (
 	"golang.org/x/net/html/charset"
 )
 
-func getTitle(url string) string {
+func GetTitle(url string) string {
 	res, _ := http.Get(url)
 	defer res.Body.Close()
 
