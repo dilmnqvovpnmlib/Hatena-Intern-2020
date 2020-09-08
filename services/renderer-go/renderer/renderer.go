@@ -28,6 +28,6 @@ func ParseHtml(src string) (string, error) {
 
 // Render は受け取った文書を HTML に変換する
 func Render(ctx context.Context, src string) (string, error) {
-	html, err := ParseHtml(src) // buf.String()
+	html, err := ParseHtml(src)
 	return html, err
 }
