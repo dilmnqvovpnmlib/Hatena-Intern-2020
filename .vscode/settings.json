@@ -1,5 +1,6 @@
 {
   "editor.fontSize": 15,
+  "workbench.editor.enablePreview": false,
   "go.useLanguageServer": true,
   // "go.alternateTools": {
   //   "go-langserver": "gopls"
