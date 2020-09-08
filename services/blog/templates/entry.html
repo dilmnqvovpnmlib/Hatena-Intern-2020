@@ -10,7 +10,7 @@
     {{end}}
   </header>
   <p>
-    <article>
+    <div>
       <header>
         <h1><a href="/blogs/{{.Blog.Path}}/entries/{{.Entry.ID}}">{{.Entry.Title}}</a></h1>
         <p>{{.Entry.PublishedAt}}</p>
@@ -19,7 +19,7 @@
         {{end}}
       </header>
       <div>{{.Entry.BodyHTML | unescapedHTML}}</div>
-    </article>
+    </div>
   </p>
 </p>
 {{end}}
