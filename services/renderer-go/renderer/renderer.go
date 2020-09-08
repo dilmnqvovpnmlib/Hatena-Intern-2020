@@ -20,7 +20,7 @@ func ParseHtml(src string) (string, error) {
 	)
 	var buf bytes.Buffer
 	if err := markdown.Convert([]byte(src), &buf); err != nil {
-		panic(err)
+		return "", err
 	}
 	html := buf.String()
 	return html, nil

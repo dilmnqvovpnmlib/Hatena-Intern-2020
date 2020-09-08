@@ -2,40 +2,32 @@ package renderer
 
 import (
 	"context"
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func Test_Render(t *testing.T) {
+var flagtests = []struct {
+	in  string
+	out string
+}{
 	// 記法のテスト
-	headlineSrc := `# 見出し`
-	headlineHtml, headlineErr := Render(context.Background(), headlineSrc)
-	assert.NoError(t, headlineErr)
-	assert.Equal(t, "<h1>見出し</h1>\n", headlineHtml)
-
-	fmt.Println("------------------------------")
-
+	{`# 見出し`, "<h1>見出し</h1>\n"},
 	// リストのテスト
-	listSrc := "- リスト"
-	listHtml, listErr := Render(context.Background(), listSrc)
-	assert.NoError(t, listErr)
-	assert.Equal(t, "<ul>\n<li>リスト</li>\n</ul>\n", listHtml)
-
-	fmt.Println("------------------------------")
-
+	{"- リスト", "<ul>\n<li>リスト</li>\n</ul>\n"},
 	// リンクのテスト
-	linkSrc := "[localhost](localhost:8000)"
-	linkHtml, linkErr := Render(context.Background(), linkSrc)
-	assert.NoError(t, linkErr)
-	assert.Equal(t, `<p><a href="localhost:8000">localhost</a></p>`+"\n", linkHtml)
-
-	fmt.Println("------------------------------")
-
+	{"[localhost](localhost:8000)", `<p><a href="localhost:8000">localhost</a></p>` + "\n"},
 	// 独自記法
-	originalSrc := "``` bash\n" + "echo Hello" + "\n" + "```"
-	originalHtml, originalErr := Render(context.Background(), originalSrc)
-	ans := `<pre style="background-color:#fff"><span style="color:#0086b3">echo</span> Hello` + "\n" + "</pre>"
-	assert.NoError(t, originalErr)
-	assert.Equal(t, ans, originalHtml)
+	{"``` bash\n" + "echo Hello" + "\n" + "```", `<pre style="background-color:#fff"><span style="color:#0086b3">echo</span> Hello` + "\n" + "</pre>"},
+}
+
+func Test_Render(t *testing.T) {
+	for _, tt := range flagtests {
+		t.Run(tt.in, func(t *testing.T) {
+			html, err := Render(context.Background(), tt.in)
+			assert.NoError(t, err)
+			if html != tt.out {
+				t.Errorf("got %q, want %q", html, tt.out)
+			}
+		})
+	}
 }
