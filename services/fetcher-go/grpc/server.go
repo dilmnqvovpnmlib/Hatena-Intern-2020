@@ -3,9 +3,10 @@ package grpc
 import (
 	"context"
 
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+
 	pb "github.com/hatena/Hatena-Intern-2020/services/fetcher-go/pb/fetcher"
 	"github.com/hatena/Hatena-Intern-2020/services/fetcher-go/fetcher"
-	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type Server struct {
