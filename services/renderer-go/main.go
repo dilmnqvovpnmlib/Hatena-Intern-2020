@@ -10,17 +10,20 @@ import (
 	"syscall"
 	"time"
 
+	"google.golang.org/grpc"
+	"go.uber.org/zap"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	"github.com/hatena/Hatena-Intern-2020/services/renderer-go/config"
-	server "github.com/hatena/Hatena-Intern-2020/services/renderer-go/grpc"
-	"github.com/hatena/Hatena-Intern-2020/services/renderer-go/log"
-	pb "github.com/hatena/Hatena-Intern-2020/services/renderer-go/pb/renderer"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+
+	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/log"
+	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/config"
+	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/app"
+	grpc_server "github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/grpc"
+	pb "github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/pb/renderer"
+	pb_fetcher "github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/pb/fetcher"
 )
 
 func main() {
@@ -37,6 +40,17 @@ func run(args []string) error {
 		return fmt.Errorf("failed to load config: %+v", err)
 	}
 
+	// タイトルを取得するサービス (fetcher-go) に接続
+	fetcherConn, err := grpc.Dial(conf.FetcherAddr, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		return fmt.Errorf("failed to connect to fetcher service: %+v", err)
+	}
+	defer fetcherConn.Close()
+	fetcherCli := pb_fetcher.NewFetcherClient(fetcherConn)
+
+	// アプリケーションを初期化
+	app := app.NewApp(fetcherCli)
+
 	// ロガーを初期化
 	logger, err := log.NewLogger(log.Config{Mode: conf.Mode})
 	if err != nil {
@@ -44,7 +58,11 @@ func run(args []string) error {
 	}
 	defer logger.Sync()
 
-	// サーバーを起動
+	// gRPC サーバーを起動
+	svr, err := grpc_server.NewServer(app)
+	if err != nil {
+		return fmt.Errorf("failed to create server: %+v", err)
+	}
 	logger.Info(fmt.Sprintf("starting gRPC server (port = %v)", conf.GRPCPort))
 	lis, err := net.Listen("tcp", ":"+strconv.Itoa(conf.GRPCPort))
 	if err != nil {
@@ -63,7 +81,6 @@ func run(args []string) error {
 			grpc_recovery.UnaryServerInterceptor(),
 		)),
 	)
-	svr := server.NewServer()
 	pb.RegisterRendererServer(s, svr)
 	healthpb.RegisterHealthServer(s, svr)
 	go stop(s, conf.GracefulStopTimeout, logger)

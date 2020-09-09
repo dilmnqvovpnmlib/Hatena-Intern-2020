@@ -1,12 +1,8 @@
 package config
 
 import (
-	"crypto/ecdsa"
-	"crypto/x509"
-	"encoding/pem"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"time"
@@ -16,6 +12,7 @@ import (
 type Config struct {
 	Mode                string
 	GRPCPort            int
+	FetcherAddr         string
 	GracefulStopTimeout time.Duration
 }
 
@@ -43,6 +40,13 @@ func Load() (*Config, error) {
 		conf.GRPCPort = grpcPort
 	}
 
+	// FetcherAddr
+	fetcherAddr := os.Getenv("FETCHER_ADDR")
+	if fetcherAddr == "" {
+		return nil, errors.New("FETCHER_ADDR is not set")
+	}
+	conf.FetcherAddr = fetcherAddr
+
 	// GracefulStopTimeout
 	gracefulStopTimeout := os.Getenv("GRACEFUL_STOP_TIMEOUT")
 	if gracefulStopTimeout != "" {
@@ -54,16 +58,4 @@ func Load() (*Config, error) {
 	}
 
 	return conf, nil
-}
-
-func loadECDSAPrivateKey(file string) (*ecdsa.PrivateKey, error) {
-	data, err := ioutil.ReadFile(file)
-	if err != nil {
-		return nil, err
-	}
-	block, _ := pem.Decode(data)
-	if block == nil {
-		return nil, errors.New("failed to load private key")
-	}
-	return x509.ParseECPrivateKey(block.Bytes)
 }
