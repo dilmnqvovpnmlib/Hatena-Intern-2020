@@ -22,6 +22,7 @@ var flagtests = []struct {
 		inputType{url: "http://foo.com", html: "<title>foo</title>", err: false},
 		"foo",
 	},
+	// TODO テストケースをきちんと作る
 	// Html が返ってこない時 (異常系)
 	{
 		inputType{url: "http://bar.com", html: "", err: true},
@@ -41,9 +42,8 @@ func Test_Fetcher(t *testing.T) {
 			title, err := GetTitle(tt.in.url)
 
 			if tt.in.err {
-				if err != nil {
-					assert.Error(t, err)
-				}
+				// TODO テストケースをきちんと作る
+				assert.Equal(t, title, tt.out)
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, title, tt.out)
