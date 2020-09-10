@@ -10,27 +10,24 @@ import (
 type inputType struct {
 	url  string
 	html string
+	err  bool
 }
 
 var flagtests = []struct {
 	in  inputType
 	out string
 }{
-	// Title と GetTitle 関数で取得した値が違う時
-	{
-		inputType{url: "http://hoge.com", html: "<title>hoge</title>"},
-		"fuga",
-	},
 	// タイトルと GetTitle 関数で取得した値が同じ時
 	{
-		inputType{url: "http://foo.com", html: "<title>foo</title>"},
+		inputType{url: "http://foo.com", html: "<title>foo</title>", err: false},
 		"foo",
 	},
-	// Html が返ってこない時
+	// Html が返ってこない時 (異常系)
 	{
-		inputType{url: "http://bar.com", html: ""},
+		inputType{url: "http://bar.com", html: "", err: true},
 		"",
 	},
+	// TODO 他の異常系のケースも実装
 }
 
 func Test_Fetcher(t *testing.T) {
@@ -42,10 +39,11 @@ func Test_Fetcher(t *testing.T) {
 				Body(strings.NewReader(tt.in.html))
 
 			title, err := GetTitle(tt.in.url)
-			if err != nil {
-				assert.Error(t, err)
-			} else if title != tt.out {
-				assert.NotEqual(t, title, tt.out)
+
+			if tt.in.err {
+				if err != nil {
+					assert.Error(t, err)
+				}
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, title, tt.out)
