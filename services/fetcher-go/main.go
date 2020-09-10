@@ -2,25 +2,25 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"net"
-	"strings"
-	"time"
-	"syscall"
-	"strconv"
+	"os"
 	"os/signal"
+	"strconv"
+	"strings"
+	"syscall"
+	"time"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 
 	"github.com/hatena/Hatena-Intern-2020/services/fetcher-go/config"
-	"github.com/hatena/Hatena-Intern-2020/services/fetcher-go/log"
 	grpc_server "github.com/hatena/Hatena-Intern-2020/services/fetcher-go/grpc"
+	"github.com/hatena/Hatena-Intern-2020/services/fetcher-go/log"
 	pb "github.com/hatena/Hatena-Intern-2020/services/fetcher-go/pb/fetcher"
 )
 

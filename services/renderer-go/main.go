@@ -10,20 +10,20 @@ import (
 	"syscall"
 	"time"
 
-	"google.golang.org/grpc"
-	"go.uber.org/zap"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 
-	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/log"
-	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/config"
 	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/app"
+	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/config"
 	grpc_server "github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/grpc"
-	pb "github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/pb/renderer"
+	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/log"
 	pb_fetcher "github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/pb/fetcher"
+	pb "github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/pb/renderer"
 )
 
 func main() {
