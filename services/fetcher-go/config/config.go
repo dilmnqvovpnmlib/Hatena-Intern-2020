@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -12,7 +11,7 @@ import (
 type Config struct {
 	Mode                string
 	GRPCPort            int
-	FetcherAddr         string
+	FetcherAddr        string
 	GracefulStopTimeout time.Duration
 }
 
@@ -39,13 +38,6 @@ func Load() (*Config, error) {
 		}
 		conf.GRPCPort = grpcPort
 	}
-
-	// FetcherAddr
-	fetcherAddr := os.Getenv("FETCHER_ADDR")
-	if fetcherAddr == "" {
-		return nil, errors.New("FETCHER_ADDR is not set")
-	}
-	conf.FetcherAddr = fetcherAddr
 
 	// GracefulStopTimeout
 	gracefulStopTimeout := os.Getenv("GRACEFUL_STOP_TIMEOUT")

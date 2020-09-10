@@ -18,12 +18,10 @@ import (
 	"google.golang.org/grpc"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 
-	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/app"
-	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/config"
-	grpc_server "github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/grpc"
-	"github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/log"
-	pb_fetcher "github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/pb/fetcher"
-	pb "github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go/pb/renderer"
+	"github.com/hatena/Hatena-Intern-2020/services/fetcher-go/config"
+	grpc_server "github.com/hatena/Hatena-Intern-2020/services/fetcher-go/grpc"
+	"github.com/hatena/Hatena-Intern-2020/services/fetcher-go/log"
+	pb "github.com/hatena/Hatena-Intern-2020/services/fetcher-go/pb/fetcher"
 )
 
 func main() {
@@ -34,22 +32,10 @@ func main() {
 }
 
 func run(args []string) error {
-	// 設定をロード
 	conf, err := config.Load()
 	if err != nil {
 		return fmt.Errorf("failed to load config: %+v", err)
 	}
-
-	// タイトルを取得するサービス (fetcher-go) に接続
-	fetcherConn, err := grpc.Dial(conf.FetcherAddr, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		return fmt.Errorf("failed to connect to fetcher service: %+v", err)
-	}
-	defer fetcherConn.Close()
-	fetcherCli := pb_fetcher.NewFetcherClient(fetcherConn)
-
-	// アプリケーションを初期化
-	app := app.NewApp(fetcherCli)
 
 	// ロガーを初期化
 	logger, err := log.NewLogger(log.Config{Mode: conf.Mode})
@@ -58,11 +44,7 @@ func run(args []string) error {
 	}
 	defer logger.Sync()
 
-	// gRPC サーバーを起動
-	svr, err := grpc_server.NewServer(app)
-	if err != nil {
-		return fmt.Errorf("failed to create server: %+v", err)
-	}
+	// サーバーを起動
 	logger.Info(fmt.Sprintf("starting gRPC server (port = %v)", conf.GRPCPort))
 	lis, err := net.Listen("tcp", ":"+strconv.Itoa(conf.GRPCPort))
 	if err != nil {
@@ -81,7 +63,8 @@ func run(args []string) error {
 			grpc_recovery.UnaryServerInterceptor(),
 		)),
 	)
-	pb.RegisterRendererServer(s, svr)
+	svr := grpc_server.NewServer()
+	pb.RegisterFetcherServer(s, svr)
 	healthpb.RegisterHealthServer(s, svr)
 	go stop(s, conf.GracefulStopTimeout, logger)
 	if err := s.Serve(lis); err != nil {

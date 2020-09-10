@@ -1,10 +1,11 @@
-module github.com/hatena/Hatena-Intern-2020/services/renderer-go
+module github.com/dilmnqvovpnmlib/Hatena-Intern-2020/services/renderer-go
 
 go 1.14
 
 require (
 	github.com/golang/protobuf v1.4.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
+	github.com/labstack/echo/v4 v4.1.17 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/yuin/goldmark v1.2.1
 	github.com/yuin/goldmark-highlighting v0.0.0-20200307114337-60d527fdb691
