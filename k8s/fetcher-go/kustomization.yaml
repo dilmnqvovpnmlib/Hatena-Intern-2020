@@ -6,4 +6,3 @@ configMapGenerator:
 - name: fetcher-go-app-env-vars
   literals:
   - MODE=development
-  - FETCHER_ADDR=fetcher-go:50051
