@@ -23,7 +23,7 @@ func NewServer() *Server {
 func (s *Server) Render(ctx context.Context, in *pb.FetcherRequest) (*pb.FetcherReply, error) {
 	title, err := fetcher.GetTitle(in.Url)
 	if err != nil {
-		return &pb.FetcherReply{}, err
+		return nil, err
 	}
 	return &pb.FetcherReply{Title: title}, nil
 }
