@@ -2,15 +2,18 @@ package fetcher
 
 import (
 	"bytes"
-	"io/ioutil"
-	"net/http"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/saintfish/chardet"
 	"golang.org/x/net/html/charset"
+	"io/ioutil"
+	"net/http"
 )
 
-func GetTitle(url string) string {
-	res, _ := http.Get(url)
+func GetTitle(url string) (string, error) {
+	res, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
 	defer res.Body.Close()
 
 	buf, _ := ioutil.ReadAll(res.Body)
@@ -25,5 +28,5 @@ func GetTitle(url string) string {
 	// HTMLパース
 	doc, _ := goquery.NewDocumentFromReader(reader)
 	title := doc.Find("title").Text()
-	return title
+	return title, nil
 }
